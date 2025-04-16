@@ -34,4 +34,19 @@ with st.expander("📍 Location"):
 with st.expander("🎁 Offers"):
     st.write("🥋 1 free martial arts class • ₹1000 1-week gym test")
 
-st.info("Want to book or ask a question? Just type it in the chat box below (Coming soon!)")
+st.info("Want to book or ask a question? Just type it in the chat box below 
+        import streamlit as st
+
+# Chat input at the bottom of the app
+user_input = st.chat_input("Type your question or message here...")
+
+# Basic display of the message
+if user_input:
+    st.write("👤 You asked:", user_input)
+    # Optionally add logic to respond to common queries
+    if "timing" in user_input.lower():
+        st.write("🕒 We’re open from 5:30 AM – 10:30 AM and 4:30 PM – 10:30 PM.")
+    elif "price" in user_input.lower() or "cost" in user_input.lower():
+        st.write("💰 The 1-week gym trial is ₹1000 including 6 sessions.")
+    else:
+        st.write("🤖 Thanks for your message! We'll get back to you soon.")
