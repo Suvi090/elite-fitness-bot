@@ -2,42 +2,44 @@ import streamlit as st
 from openai import OpenAI
 import os
 
-# Set Streamlit page config
-st.set_page_config(page_title="Elite Fitness Center - AI Assistant", page_icon="🤖")
+# Initialize the OpenAI client using the secret from Streamlit settings
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# App title and intro
+st.set_page_config(page_title="Elite Fitness Center - AI Assistant")
 st.title("🤖 Elite Fitness Center - AI Assistant")
 st.markdown("Welcome! Ask me anything about our gym, classes, or offers.")
 
-# Load the OpenAI API key securely
-api_key = st.secrets["OPENAI_API_KEY"]
-client = OpenAI(api_key=api_key)
+# Initialize session state for chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-# Get user input using chat-style input
-user_question = st.chat_input("Type your question...")
+# Display chat history
+for message in st.session_state.chat_history:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# If the user asked something
-if user_question:
+# Chat input
+user_query = st.chat_input("Type your question here...")
+
+if user_query:
+    # Display user message and save it
     with st.chat_message("user"):
-        st.markdown(user_question)
+        st.markdown(user_query)
+    st.session_state.chat_history.append({"role": "user", "content": user_query})
 
+    # Process user query via OpenAI
     try:
-        with st.chat_message("assistant"):
-            # Make the OpenAI API call
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a helpful AI assistant for a gym in Kerala. Answer questions about gym timings, martial arts classes, pricing, age limits, offers, and location.",
-                    },
-                    {"role": "user", "content": user_question},
-                ],
-            )
-
-            answer = response.choices[0].message.content
-            st.markdown(answer)
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  # You can switch to gpt-4 if needed
+            messages=st.session_state.chat_history
+        )
+        ai_reply = response.choices[0].message.content.strip()
 
     except Exception as e:
-        with st.chat_message("assistant"):
-            st.error("⚠️ Sorry, I ran into an issue. Please try again later.")
-            st.caption(f"Error: {str(e)}")
+        ai_reply = f"⚠️ Sorry, I ran into an issue. Please try again later.\n\nError: {str(e)}"
+
+    # Display assistant response and save it
+    with st.chat_message("assistant"):
+        st.markdown(ai_reply)
+    st.session_state.chat_history.append({"role": "assistant", "content": ai_reply})
