@@ -1,56 +1,57 @@
 import streamlit as st
+import openai
+import os
 
-st.set_page_config(page_title="Elite Fitness Center - AI Assistant", page_icon="🤖")
+# Set OpenAI API key from secret
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-st.markdown("# 🤖 Elite Fitness Center - AI Assistant")
+st.set_page_config(page_title="Elite Fitness Center - AI Assistant")
+
+st.title("🤖 Elite Fitness Center - AI Assistant")
+
 st.write("Welcome! I’m here to help you with info about our gym, martial arts classes, and offers.")
 
 # Gym Details
-with st.expander("🧘 Gym Details"):
+with st.expander("🧾 Gym Details"):
     st.markdown("""
-- ✅ **Semi-private gym sessions** with personal training at half the cost.
-- 🕒 **Morning:** 5:30 AM – 10:30 AM | **Evening:** 4:30 PM – 10:30 PM
-- 💪 Includes 3 weight training sessions + 3 cardio/kickboxing options weekly
-- 💰 ₹1000 for a 1-week trial
-""")
+- ✅ **Semi-private gym sessions** with personal training at half the cost.  
+- 🕒 **Morning:** 5:30 AM – 10:30 AM | **Evening:** 4:30 PM – 10:30 PM  
+- 🏋️ Includes **3 weight training sessions + 3 cardio/kickboxing options weekly**  
+- 💰 ₹1000 for a 1-week trial  
+    """)
 
 # Martial Arts
 with st.expander("🥋 Martial Arts for Kids & Teens"):
-    st.markdown("""
-- Beginner-friendly martial arts
-- Focus on discipline, fitness, and fun
-- Separate timing slots for kids
-""")
+    st.write("Special kids martial arts classes on weekends and evenings.")
 
-# MMA & Kickboxing
 with st.expander("🥊 MMA & Kickboxing for Teens & Adults"):
-    st.markdown("""
-- Real MMA & Kickboxing training
-- Learn proper technique, form, and conditioning
-- Evening sessions available weekly
-""")
+    st.write("Evening and weekend batches available. Great for fitness and self-defense.")
 
 # Location
 with st.expander("📍 Location"):
-    st.markdown("📌 Elite Fitness Center, Kochi, Kerala (Exact location sent via WhatsApp after booking)")
+    st.write("Elite Fitness Center, Kochi")
 
 # Offers
 with st.expander("🎁 Offers"):
-    st.markdown("- 1 free martial arts class • ₹1000 1-week gym test")
+    st.write("1 free martial arts class • ₹1000 1-week gym test")
 
-# Chat Section
-st.info("Want to book or ask a question? Just type it in the chat box below.")
+st.divider()
 
-user_input = st.chat_input("Type your question or message here...")
+# AI Chat Section
+st.subheader("💬 Got a question? Ask me below!")
+
+user_input = st.text_input("Type your question:")
 
 if user_input:
-    st.write("👤 You asked:", user_input)
-
-    if "time" in user_input.lower() or "timing" in user_input.lower():
-        st.write("🕒 We’re open from 5:30 AM – 10:30 AM and 4:30 PM – 10:30 PM.")
-    elif "price" in user_input.lower() or "cost" in user_input.lower() or "trial" in user_input.lower():
-        st.write("💰 The 1-week gym trial is ₹1000. Martial arts trial is free!")
-    elif "location" in user_input.lower():
-        st.write("📍 We’re in Kochi, Kerala. Full location will be shared after booking.")
-    else:
-        st.write("🤖 Thanks for your message! We'll get back to you ASAP.")
+    with st.spinner("Thinking..."):
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant for a fitness center in Kerala. Answer questions about gym, timings, classes, offers, etc."},
+                    {"role": "user", "content": user_input}
+                ]
+            )
+            st.success(response['choices'][0]['message']['content'])
+        except Exception as e:
+            st.error(f"Something went wrong: {e}")
