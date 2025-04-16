@@ -34,7 +34,8 @@ with st.expander("📍 Location"):
 with st.expander("🎁 Offers"):
     st.write("🥋 1 free martial arts class • ₹1000 1-week gym test")
 
-st.info("Want to book or ask a question? Just type it in the chat box below 
+st.infost.info("Want to book or ask a question? Just type it in the chat box below.")
+
         import streamlit as st
 
 # Chat input at the bottom of the app
