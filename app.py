@@ -30,10 +30,27 @@ if user_query:
 
     # Process user query via OpenAI
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # You can switch to gpt-4 if needed
-            messages=st.session_state.chat_history
-        )
+      response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {
+            "role": "system",
+            "content": """
+You are an AI assistant for Elite Fitness Center in Kerala.
+Here are the gym's actual policies and offerings:
+
+- Age limit to join gym: Minimum age is 16 with parental consent, 18+ without.
+- Gym timings: Morning 5:30 AM – 10:30 AM | Evening 4:30 PM – 10:30 PM
+- Offers: ₹1000 for a 1-week trial, includes 3 weight training + 3 cardio/kickboxing sessions.
+- Martial Arts: Classes available for both kids and adults, including MMA and Kickboxing.
+
+Answer all queries only using the above gym-specific information. If unsure, ask them to contact the front desk.
+"""
+        },
+        *st.session_state.chat_history
+    ]
+)
+
         ai_reply = response.choices[0].message.content.strip()
 
     except Exception as e:
